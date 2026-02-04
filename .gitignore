@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+**/build/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+out/
+
+# Kotlin
+kotlin-daemon.*
+
+# Logs
+*.log
+
+# Local env
+.env
