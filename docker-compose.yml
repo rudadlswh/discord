@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: discord-oracle
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    environment:
+      ORACLE_PASSWORD: "oracle"
+      APP_USER: "discord"
+      APP_USER_PASSWORD: "discord"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+volumes:
+  oracle-data:
