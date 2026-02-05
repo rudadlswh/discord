@@ -2,8 +2,7 @@ package com.chogm.discord.realtime
 
 import com.chogm.discord.JsonSupport
 import com.chogm.discord.models.SignalEnvelope
-import io.ktor.websocket.DefaultWebSocketServerSession
-import io.ktor.websocket.Frame
+import io.ktor.server.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.send
 import java.util.concurrent.ConcurrentHashMap
 
@@ -25,11 +24,11 @@ class SignalHub {
         val payload = JsonSupport.json.encodeToString(SignalEnvelope.serializer(), outbound)
 
         if (envelope.targetUserId != null) {
-            room[envelope.targetUserId]?.send(Frame.Text(payload))
+            room[envelope.targetUserId]?.send(payload)
         } else {
             room.forEach { (userId, session) ->
                 if (userId != fromUserId) {
-                    session.send(Frame.Text(payload))
+                    session.send(payload)
                 }
             }
         }

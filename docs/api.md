@@ -12,6 +12,9 @@ Auth: Bearer token (JWT) via `Authorization: Bearer <token>` for all non-auth en
   - body: { email, password }
   - response: { token, user }
 
+## Ping
+- GET /ping
+
 ## Friends
 - POST /api/friends/requests
   - body: { addresseeId }
@@ -46,4 +49,3 @@ Auth: Bearer token (JWT) via `Authorization: Bearer <token>` for all non-auth en
   - Send/Receive: SignalEnvelope
   - SignalEnvelope fields: { type, targetUserId?, fromUserId?, payload? }
   - `type` values are client-defined (offer/answer/ice/candidate/leave/etc).
-

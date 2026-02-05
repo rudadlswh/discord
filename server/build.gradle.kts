@@ -21,6 +21,16 @@ application {
     mainClass.set("com.chogm.discord.ApplicationKt")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
 repositories {
     mavenCentral()
 }

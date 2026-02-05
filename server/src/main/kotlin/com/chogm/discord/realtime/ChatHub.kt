@@ -2,8 +2,7 @@ package com.chogm.discord.realtime
 
 import com.chogm.discord.JsonSupport
 import com.chogm.discord.models.ChatMessageResponse
-import io.ktor.websocket.DefaultWebSocketServerSession
-import io.ktor.websocket.Frame
+import io.ktor.server.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.send
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -26,7 +25,7 @@ class ChatHub {
         val payload = JsonSupport.json.encodeToString(ChatMessageResponse.serializer(), message)
         val room = rooms[channelId] ?: return
         room.toList().forEach { live ->
-            live.session.send(Frame.Text(payload))
+            live.session.send(payload)
         }
     }
 }

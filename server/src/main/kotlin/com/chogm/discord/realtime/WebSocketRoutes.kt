@@ -12,7 +12,6 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.websocket.webSocket
-import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
@@ -28,7 +27,7 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
 
             try {
                 for (frame in incoming) {
-                    if (frame is Frame.Text) {
+                    if (frame is io.ktor.websocket.Frame.Text) {
                         val request = JsonSupport.json.decodeFromString(
                             ChatMessageRequest.serializer(),
                             frame.readText()
@@ -39,7 +38,7 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
                 }
             } catch (ex: ServiceException) {
                 val error = SignalError(ex.message)
-                send(Frame.Text(JsonSupport.json.encodeToString(SignalError.serializer(), error)))
+                send(JsonSupport.json.encodeToString(SignalError.serializer(), error))
             } finally {
                 chatHub.leave(channelId, userId, this)
             }
@@ -54,7 +53,7 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
 
             try {
                 for (frame in incoming) {
-                    if (frame is Frame.Text) {
+                    if (frame is io.ktor.websocket.Frame.Text) {
                         val envelope = JsonSupport.json.decodeFromString(
                             SignalEnvelope.serializer(),
                             frame.readText()
@@ -64,7 +63,7 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
                 }
             } catch (ex: Exception) {
                 val error = SignalError(ex.message ?: "Signaling error")
-                send(Frame.Text(JsonSupport.json.encodeToString(SignalError.serializer(), error)))
+                send(JsonSupport.json.encodeToString(SignalError.serializer(), error))
             } finally {
                 signalHub.leave(channelId, userId)
                 close()

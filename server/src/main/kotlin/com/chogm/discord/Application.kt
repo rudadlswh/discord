@@ -21,8 +21,9 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.engine.EngineMain
+import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -32,7 +33,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
-import java.time.Duration
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -46,8 +46,8 @@ fun Application.module() {
     }
 
     install(WebSockets) {
-        pingPeriod = Duration.ofSeconds(20)
-        timeout = Duration.ofSeconds(30)
+        pingPeriodMillis = 20_000
+        timeoutMillis = 30_000
     }
 
     install(CallLogging)
@@ -90,13 +90,13 @@ fun Application.module() {
     val signalHub = SignalHub()
 
     routing {
-        get("/health") {
+        get("/ping") {
             call.respondText("OK")
         }
 
         authRoutes(authService)
 
-        io.ktor.server.auth.authenticate("auth-jwt") {
+        authenticate("auth-jwt") {
             friendRoutes(friendService)
             channelRoutes(channelService)
         }
