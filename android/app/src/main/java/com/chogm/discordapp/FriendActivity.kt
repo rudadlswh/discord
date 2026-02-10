@@ -1,21 +1,18 @@
 package com.chogm.discordapp
 
+import android.Manifest
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 
-class FriendActivity : AppCompatActivity() {
-    private enum class HomeTab {
-        HOME,
-        NOTIFICATIONS,
-        PROFILE
-    }
+class FriendActivity : ComponentActivity() {
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,81 +24,30 @@ class FriendActivity : AppCompatActivity() {
             return
         }
 
-        setContentView(R.layout.activity_friends)
+        requestNotificationPermissionIfNeeded()
+        FriendNotifications.ensureChannel(this)
+        MessageNotifications.ensureChannel(this)
 
-        val messagesScreen = findViewById<View>(R.id.messagesScreen)
-        val notificationsScreen = findViewById<View>(R.id.notificationsScreen)
-        val profileScreen = findViewById<View>(R.id.profileScreen)
-
-        val navHome = findViewById<View>(R.id.navHome)
-        val navNotifications = findViewById<View>(R.id.navNotifications)
-        val navProfile = findViewById<View>(R.id.navProfile)
-
-        val navHomeIcon = findViewById<ImageView>(R.id.navHomeIcon)
-        val navNotificationsIcon = findViewById<ImageView>(R.id.navNotificationsIcon)
-        val navProfileIcon = findViewById<ImageView>(R.id.navProfileIcon)
-
-        val navHomeLabel = findViewById<TextView>(R.id.navHomeLabel)
-        val navNotificationsLabel = findViewById<TextView>(R.id.navNotificationsLabel)
-        val navProfileLabel = findViewById<TextView>(R.id.navProfileLabel)
-
-        val navHomeIndicator = findViewById<View>(R.id.navHomeIndicator)
-        val navNotificationsIndicator = findViewById<View>(R.id.navNotificationsIndicator)
-        val navProfileIndicator = findViewById<View>(R.id.navProfileIndicator)
-
-        val notificationsMenuButton = findViewById<ImageButton>(R.id.notificationsMenuButton)
-
-        val displayName = AppPrefs.getDisplayName(this) ?: getString(R.string.profile_default_name)
-        val username = AppPrefs.getUsername(this) ?: getString(R.string.profile_default_username)
-        val avatarInitial = displayName.trim().take(1).ifEmpty { "D" }
-
-        findViewById<TextView>(R.id.profileDisplayName).text = displayName
-        findViewById<TextView>(R.id.profileUsername).text = "@$username"
-        findViewById<TextView>(R.id.profileAvatar).text = avatarInitial
-
-        fun setNavSelected(
-            selected: Boolean,
-            icon: ImageView,
-            label: TextView,
-            indicator: View
-        ) {
-            val color = if (selected) getColor(R.color.nav_active) else getColor(R.color.nav_inactive)
-            icon.imageTintList = ColorStateList.valueOf(color)
-            label.setTextColor(color)
-            indicator.visibility = if (selected) View.VISIBLE else View.INVISIBLE
+        setContent {
+            DiscordTheme(darkTheme = true) {
+                FriendHomeScreen(onLogout = { performLogout() })
+            }
         }
-
-        fun selectTab(tab: HomeTab) {
-            messagesScreen.visibility = if (tab == HomeTab.HOME) View.VISIBLE else View.GONE
-            notificationsScreen.visibility = if (tab == HomeTab.NOTIFICATIONS) View.VISIBLE else View.GONE
-            profileScreen.visibility = if (tab == HomeTab.PROFILE) View.VISIBLE else View.GONE
-
-            setNavSelected(tab == HomeTab.HOME, navHomeIcon, navHomeLabel, navHomeIndicator)
-            setNavSelected(
-                tab == HomeTab.NOTIFICATIONS,
-                navNotificationsIcon,
-                navNotificationsLabel,
-                navNotificationsIndicator
-            )
-            setNavSelected(tab == HomeTab.PROFILE, navProfileIcon, navProfileLabel, navProfileIndicator)
-        }
-
-        navHome.setOnClickListener { selectTab(HomeTab.HOME) }
-        navNotifications.setOnClickListener { selectTab(HomeTab.NOTIFICATIONS) }
-        navProfile.setOnClickListener { selectTab(HomeTab.PROFILE) }
-
-        notificationsMenuButton.setOnClickListener { showNotificationsSheet() }
-
-        selectTab(HomeTab.HOME)
     }
 
-    private fun showNotificationsSheet() {
-        val dialog = BottomSheetDialog(this)
-        dialog.setContentView(R.layout.sheet_notifications)
-        dialog.setOnShowListener {
-            dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-                ?.setBackgroundResource(android.R.color.transparent)
+    private fun performLogout() {
+        AppPrefs.clearAuth(this)
+        val intent = Intent(this, WelcomeActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            return
         }
-        dialog.show()
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }

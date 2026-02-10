@@ -33,6 +33,13 @@ data class UserResponse(
 )
 
 @Serializable
+data class UserLookupResponse(
+    val id: String,
+    val username: String,
+    val displayName: String
+)
+
+@Serializable
 data class FriendRequestCreateRequest(
     val addresseeId: String
 )
@@ -84,6 +91,27 @@ data class ChatMessageResponse(
 )
 
 @Serializable
+data class DirectMessageSendRequest(
+    val toUserId: String,
+    val content: String
+)
+
+@Serializable
+data class DirectThreadResponse(
+    val channelId: String,
+    val friendId: String,
+    val friendUsername: String,
+    val friendDisplayName: String,
+    val lastMessage: ChatMessageResponse? = null
+)
+
+@Serializable
+data class DirectMessageResponse(
+    val channelId: String,
+    val message: ChatMessageResponse
+)
+
+@Serializable
 data class SignalEnvelope(
     val type: String,
     val targetUserId: String? = null,
@@ -104,7 +132,8 @@ data class ErrorResponse(
 @Serializable
 enum class ChannelType {
     TEXT,
-    VOICE
+    VOICE,
+    DIRECT
 }
 
 @Serializable

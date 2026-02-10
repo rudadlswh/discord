@@ -15,18 +15,24 @@ import java.util.UUID
 
 class FriendService {
     fun createRequest(requesterId: String, addresseeId: String): FriendRequestResponse {
-        if (requesterId == addresseeId) {
-            throw ServiceException(HttpStatusCode.BadRequest, "Cannot friend yourself")
-        }
-
         return transaction {
-            val addresseeExists = Users.select { Users.id eq addresseeId }.count() > 0
-            if (!addresseeExists) {
-                throw ServiceException(HttpStatusCode.NotFound, "Addressee not found")
+            val trimmed = addresseeId.trim()
+            if (trimmed.isEmpty()) {
+                throw ServiceException(HttpStatusCode.BadRequest, "Missing addressee")
+            }
+
+            val addresseeRow = Users.select { Users.id eq trimmed }.singleOrNull()
+                ?: Users.select { Users.email eq trimmed }.singleOrNull()
+                ?: Users.select { Users.username eq trimmed }.singleOrNull()
+                ?: throw ServiceException(HttpStatusCode.NotFound, "Addressee not found")
+
+            val resolvedAddresseeId = addresseeRow[Users.id]
+            if (requesterId == resolvedAddresseeId) {
+                throw ServiceException(HttpStatusCode.BadRequest, "Cannot friend yourself")
             }
 
             val alreadyFriends = Friendships
-                .select { (Friendships.userId eq requesterId) and (Friendships.friendId eq addresseeId) }
+                .select { (Friendships.userId eq requesterId) and (Friendships.friendId eq resolvedAddresseeId) }
                 .count() > 0
             if (alreadyFriends) {
                 throw ServiceException(HttpStatusCode.Conflict, "Already friends")
@@ -34,8 +40,8 @@ class FriendService {
 
             val pendingBetween = FriendRequests
                 .select {
-                    ((FriendRequests.requesterId eq requesterId) and (FriendRequests.addresseeId eq addresseeId)) or
-                        ((FriendRequests.requesterId eq addresseeId) and (FriendRequests.addresseeId eq requesterId))
+                    ((FriendRequests.requesterId eq requesterId) and (FriendRequests.addresseeId eq resolvedAddresseeId)) or
+                        ((FriendRequests.requesterId eq resolvedAddresseeId) and (FriendRequests.addresseeId eq requesterId))
                 }
                 .andWhere { FriendRequests.status eq FriendRequestStatus.PENDING.name }
                 .count() > 0
@@ -50,7 +56,7 @@ class FriendService {
             FriendRequests.insert {
                 it[FriendRequests.id] = id
                 it[FriendRequests.requesterId] = requesterId
-                it[FriendRequests.addresseeId] = addresseeId
+                it[FriendRequests.addresseeId] = resolvedAddresseeId
                 it[FriendRequests.status] = FriendRequestStatus.PENDING.name
                 it[FriendRequests.createdAt] = now
                 it[FriendRequests.respondedAt] = null
@@ -59,7 +65,7 @@ class FriendService {
             FriendRequestResponse(
                 id = id,
                 requesterId = requesterId,
-                addresseeId = addresseeId,
+                addresseeId = resolvedAddresseeId,
                 status = FriendRequestStatus.PENDING,
                 createdAt = now.toString(),
                 respondedAt = null

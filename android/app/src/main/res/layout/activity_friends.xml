@@ -142,10 +142,13 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/addFriendButton"
                             android:layout_width="wrap_content"
                             android:layout_height="36dp"
                             android:layout_marginTop="12dp"
                             android:background="@drawable/bg_pill_button"
+                            android:clickable="true"
+                            android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingHorizontal="12dp">
@@ -1059,6 +1062,20 @@
                             android:textColor="@color/text_secondary_dark"
                             android:textSize="12sp" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/profileLogoutButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_dark_card"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="@string/logout_button"
+                        android:textColor="@color/text_primary_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

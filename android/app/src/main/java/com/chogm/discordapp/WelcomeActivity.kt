@@ -2,10 +2,10 @@ package com.chogm.discordapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -16,17 +16,13 @@ class WelcomeActivity : AppCompatActivity() {
             return
         }
 
-        setContentView(R.layout.activity_welcome)
-
-        val signupButton = findViewById<Button>(R.id.welcomeSignupButton)
-        val loginButton = findViewById<Button>(R.id.welcomeLoginButton)
-
-        signupButton.setOnClickListener {
-            startActivity(Intent(this, RegisterEmailActivity::class.java))
-        }
-
-        loginButton.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+        setContent {
+            DiscordTheme(darkTheme = true) {
+                WelcomeScreen(
+                    onSignup = { startActivity(Intent(this, RegisterEmailActivity::class.java)) },
+                    onLogin = { startActivity(Intent(this, LoginActivity::class.java)) }
+                )
+            }
         }
     }
 }
