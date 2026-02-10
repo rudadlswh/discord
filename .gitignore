@@ -9,6 +9,7 @@
 .idea/
 *.iml
 out/
+**/xcuserdata/
 
 # Kotlin
 kotlin-daemon.*
