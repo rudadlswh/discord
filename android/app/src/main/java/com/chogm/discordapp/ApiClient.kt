@@ -11,6 +11,19 @@ object ApiClient {
         return baseUrl.trimEnd('/') + path
     }
 
+    fun buildWebSocketUrl(baseUrl: String, path: String): String? {
+        val trimmed = baseUrl.trim().trimEnd { it == '/' }
+        return when {
+            trimmed.startsWith("https://") -> {
+                "wss://" + trimmed.removePrefix("https://") + path
+            }
+            trimmed.startsWith("http://") -> {
+                "ws://" + trimmed.removePrefix("http://") + path
+            }
+            else -> null
+        }
+    }
+
     fun executeRequest(
         method: String,
         url: String,

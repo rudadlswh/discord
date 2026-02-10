@@ -9,6 +9,8 @@ object AppPrefs {
     private const val KEY_USERNAME = "username"
     private const val KEY_DISPLAY_NAME = "display_name"
     private const val KEY_BASE_URL = "base_url"
+    private const val KEY_SEEN_FRIEND_REQUESTS = "seen_friend_requests"
+    private const val KEY_SEEN_MESSAGE_IDS = "seen_message_ids"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -46,5 +48,45 @@ object AppPrefs {
 
     fun setBaseUrl(context: Context, value: String) {
         prefs(context).edit().putString(KEY_BASE_URL, value).apply()
+    }
+
+    private fun seenFriendRequestsKey(userId: String?): String {
+        return if (userId.isNullOrBlank()) {
+            KEY_SEEN_FRIEND_REQUESTS
+        } else {
+            "${KEY_SEEN_FRIEND_REQUESTS}_$userId"
+        }
+    }
+
+    fun getSeenFriendRequestIds(context: Context, userId: String?): Set<String> {
+        val key = seenFriendRequestsKey(userId)
+        return prefs(context).getStringSet(key, emptySet()) ?: emptySet()
+    }
+
+    fun addSeenFriendRequestIds(context: Context, userId: String?, ids: Set<String>) {
+        if (ids.isEmpty()) return
+        val key = seenFriendRequestsKey(userId)
+        val current = prefs(context).getStringSet(key, emptySet()) ?: emptySet()
+        prefs(context).edit().putStringSet(key, current + ids).apply()
+    }
+
+    private fun seenMessageIdsKey(userId: String?): String {
+        return if (userId.isNullOrBlank()) {
+            KEY_SEEN_MESSAGE_IDS
+        } else {
+            "${KEY_SEEN_MESSAGE_IDS}_$userId"
+        }
+    }
+
+    fun getSeenMessageIds(context: Context, userId: String?): Set<String> {
+        val key = seenMessageIdsKey(userId)
+        return prefs(context).getStringSet(key, emptySet()) ?: emptySet()
+    }
+
+    fun addSeenMessageIds(context: Context, userId: String?, ids: Set<String>) {
+        if (ids.isEmpty()) return
+        val key = seenMessageIdsKey(userId)
+        val current = prefs(context).getStringSet(key, emptySet()) ?: emptySet()
+        prefs(context).edit().putStringSet(key, current + ids).apply()
     }
 }

@@ -7,12 +7,15 @@ import com.chogm.discord.channels.ChannelService
 import com.chogm.discord.channels.channelRoutes
 import com.chogm.discord.db.DatabaseFactory
 import com.chogm.discord.db.DbConfig
+import com.chogm.discord.dm.DirectMessageService
+import com.chogm.discord.dm.directMessageRoutes
 import com.chogm.discord.friend.FriendService
 import com.chogm.discord.friend.friendRoutes
 import com.chogm.discord.models.ErrorResponse
 import com.chogm.discord.realtime.ChatHub
 import com.chogm.discord.realtime.SignalHub
 import com.chogm.discord.realtime.webSocketRoutes
+import com.chogm.discord.users.UserService
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -33,6 +36,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
+import com.chogm.discord.users.userRoutes
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -86,6 +90,8 @@ fun Application.module() {
     val authService = AuthService()
     val friendService = FriendService()
     val channelService = ChannelService()
+    val directMessageService = DirectMessageService(channelService)
+    val userService = UserService()
     val chatHub = ChatHub()
     val signalHub = SignalHub()
 
@@ -97,8 +103,10 @@ fun Application.module() {
         authRoutes(authService)
 
         authenticate("auth-jwt") {
+            userRoutes(userService)
             friendRoutes(friendService)
             channelRoutes(channelService)
+            directMessageRoutes(directMessageService)
         }
 
         webSocketRoutes(chatHub, signalHub, channelService)

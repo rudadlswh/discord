@@ -51,6 +51,17 @@ fi
 export JAVA_HOME
 export PATH="$JAVA_HOME/bin:$PATH"
 
+if ! command -v gradle >/dev/null 2>&1; then
+  echo "gradle not found in PATH"
+  exit 1
+fi
+
+echo "Cleaning server build..."
+JAVA_HOME="$JAVA_HOME" gradle -p "$REPO_ROOT/server" clean
+
+echo "Starting server..."
+nohup env JAVA_HOME="$JAVA_HOME" gradle -p "$REPO_ROOT/server" run --no-daemon > /tmp/discord_server.log 2>&1 &
+
 "$REPO_ROOT/android/gradlew" -p "$REPO_ROOT/android" :app:installDebug
 
 "$ADB_BIN" shell am start -n com.chogm.discordapp/.WelcomeActivity
