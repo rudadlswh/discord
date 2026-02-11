@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+**/build/
+**/local.properties
+**/.cxx/
+**/.externalNativeBuild/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+out/
+**/xcuserdata/
+
+# Kotlin
+kotlin-daemon.*
+
+# Logs
+*.log
+
+# Local env
+.env

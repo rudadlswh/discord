@@ -1,0 +1,393 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02C4A888623628998180EB1F /* HomeTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD4B94960C6231147E87E35 /* HomeTabsView.swift */; };
+		23ED0FCC892402B81DEA0007 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1902174BA23A07AEF1673 /* ProfileView.swift */; };
+		2CD26B7D9BF7574E226A35A1 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 4D553B7F737D181B70EC442E /* WebRTC */; };
+		3112B26D27925BF034C757AF /* AuthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C4DC11C2CFDCBB4B7EB2C0 /* AuthViews.swift */; };
+		62CA1016F92A8E0DC5351260 /* AppPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1020724CAF89AC4FCC400751 /* AppPrefs.swift */; };
+		66B65EF41BE3765A83DAF387 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0995B39962A31FA3CB7A84C6 /* LaunchScreen.storyboard */; };
+		6EE3599225EF5E5EDE75CC11 /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C213449A574AAF793C0955 /* CallManager.swift */; };
+		80D801AED0FF7EAC7809BA97 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F64F5C1DBAAC5C614E39941 /* NotificationsView.swift */; };
+		8868594E34F87ECC3B8AACB4 /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0228FC37505154D819B40979 /* ApiClient.swift */; };
+		8CA2F69B12FE6512BE31E1C2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63565DC45A941AFCB1B86EC3 /* AuthService.swift */; };
+		9607A7B7467CA6DE075DA163 /* FriendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9426AEF79C62A4B9CAFB8A4A /* FriendService.swift */; };
+		BFA872AD3859A260DD31BFE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB8ACEC7014F69F152E600C7 /* Assets.xcassets */; };
+		C802A235E32892815AD1C01D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE75747E796DB5577B3B0F88 /* Theme.swift */; };
+		CE8CE8B6A9753CCB697CA5AE /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A91DF68D614C2AF9791126 /* Components.swift */; };
+		FB51B9FA0559AC6A4341FC24 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC4BEDD3722F8C270EE086F /* MessagesView.swift */; };
+		FC1495BD98D42A61367F47CC /* DiscordLiteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902D2507507FCF92FA339FCE /* DiscordLiteApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		01A91DF68D614C2AF9791126 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		0228FC37505154D819B40979 /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
+		0995B39962A31FA3CB7A84C6 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		1020724CAF89AC4FCC400751 /* AppPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPrefs.swift; sourceTree = "<group>"; };
+		2EC4BEDD3722F8C270EE086F /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
+		36C4DC11C2CFDCBB4B7EB2C0 /* AuthViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViews.swift; sourceTree = "<group>"; };
+		63565DC45A941AFCB1B86EC3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		6CD4B94960C6231147E87E35 /* HomeTabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabsView.swift; sourceTree = "<group>"; };
+		6F64F5C1DBAAC5C614E39941 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		84C213449A574AAF793C0955 /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
+		902D2507507FCF92FA339FCE /* DiscordLiteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscordLiteApp.swift; sourceTree = "<group>"; };
+		9426AEF79C62A4B9CAFB8A4A /* FriendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendService.swift; sourceTree = "<group>"; };
+		AE75747E796DB5577B3B0F88 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		CCDAEC80879A69EF4DA9A7FC /* DiscordLite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiscordLite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD87FD0B42530E2A6B5FE277 /* DiscordLite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DiscordLite.entitlements; sourceTree = "<group>"; };
+		DB8ACEC7014F69F152E600C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FEF1902174BA23A07AEF1673 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		74A9B44493B834CC0B83CDFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CD26B7D9BF7574E226A35A1 /* WebRTC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		28ABDDBA422D36D1216B08A7 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				0228FC37505154D819B40979 /* ApiClient.swift */,
+				1020724CAF89AC4FCC400751 /* AppPrefs.swift */,
+				DB8ACEC7014F69F152E600C7 /* Assets.xcassets */,
+				63565DC45A941AFCB1B86EC3 /* AuthService.swift */,
+				36C4DC11C2CFDCBB4B7EB2C0 /* AuthViews.swift */,
+				84C213449A574AAF793C0955 /* CallManager.swift */,
+				01A91DF68D614C2AF9791126 /* Components.swift */,
+				CD87FD0B42530E2A6B5FE277 /* DiscordLite.entitlements */,
+				902D2507507FCF92FA339FCE /* DiscordLiteApp.swift */,
+				9426AEF79C62A4B9CAFB8A4A /* FriendService.swift */,
+				6CD4B94960C6231147E87E35 /* HomeTabsView.swift */,
+				0995B39962A31FA3CB7A84C6 /* LaunchScreen.storyboard */,
+				2EC4BEDD3722F8C270EE086F /* MessagesView.swift */,
+				6F64F5C1DBAAC5C614E39941 /* NotificationsView.swift */,
+				FEF1902174BA23A07AEF1673 /* ProfileView.swift */,
+				AE75747E796DB5577B3B0F88 /* Theme.swift */,
+			);
+			name = ios;
+			path = .;
+			sourceTree = "<group>";
+		};
+		47E438642D8048D79805989F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CCDAEC80879A69EF4DA9A7FC /* DiscordLite.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7FDEE6F06688460BB89B2AE0 = {
+			isa = PBXGroup;
+			children = (
+				28ABDDBA422D36D1216B08A7 /* ios */,
+				47E438642D8048D79805989F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		696AF9770C712625EF29BE98 /* DiscordLite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92C97A9DD32DAE481220BC31 /* Build configuration list for PBXNativeTarget "DiscordLite" */;
+			buildPhases = (
+				71A98915224191859F7C5EEB /* Sources */,
+				88C45A03EDAAF72A5246A5A6 /* Resources */,
+				74A9B44493B834CC0B83CDFC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DiscordLite;
+			packageProductDependencies = (
+				4D553B7F737D181B70EC442E /* WebRTC */,
+			);
+			productName = DiscordLite;
+			productReference = CCDAEC80879A69EF4DA9A7FC /* DiscordLite.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B3FA574B6001B84350307A9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2620;
+			};
+			buildConfigurationList = 579F986248F8A17F1828EC83 /* Build configuration list for PBXProject "DiscordLite" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7FDEE6F06688460BB89B2AE0;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				696AF9770C712625EF29BE98 /* DiscordLite */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		88C45A03EDAAF72A5246A5A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFA872AD3859A260DD31BFE9 /* Assets.xcassets in Resources */,
+				66B65EF41BE3765A83DAF387 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		71A98915224191859F7C5EEB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8868594E34F87ECC3B8AACB4 /* ApiClient.swift in Sources */,
+				62CA1016F92A8E0DC5351260 /* AppPrefs.swift in Sources */,
+				8CA2F69B12FE6512BE31E1C2 /* AuthService.swift in Sources */,
+				3112B26D27925BF034C757AF /* AuthViews.swift in Sources */,
+				6EE3599225EF5E5EDE75CC11 /* CallManager.swift in Sources */,
+				CE8CE8B6A9753CCB697CA5AE /* Components.swift in Sources */,
+				FC1495BD98D42A61367F47CC /* DiscordLiteApp.swift in Sources */,
+				9607A7B7467CA6DE075DA163 /* FriendService.swift in Sources */,
+				02C4A888623628998180EB1F /* HomeTabsView.swift in Sources */,
+				FB51B9FA0559AC6A4341FC24 /* MessagesView.swift in Sources */,
+				80D801AED0FF7EAC7809BA97 /* NotificationsView.swift in Sources */,
+				23ED0FCC892402B81DEA0007 /* ProfileView.swift in Sources */,
+				C802A235E32892815AD1C01D /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		375A8B5BDC2B9C32E6EF8A65 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		483DB0CBD98829E91D462D6D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		65CF6C5B0EF5F8DFCE6D4553 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DiscordLite.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = M6L5TLN44L;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.chogm.DiscordLite;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82662B59111CC0BB259946BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DiscordLite.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = M6L5TLN44L;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.chogm.DiscordLite;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		579F986248F8A17F1828EC83 /* Build configuration list for PBXProject "DiscordLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				375A8B5BDC2B9C32E6EF8A65 /* Debug */,
+				483DB0CBD98829E91D462D6D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		92C97A9DD32DAE481220BC31 /* Build configuration list for PBXNativeTarget "DiscordLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65CF6C5B0EF5F8DFCE6D4553 /* Debug */,
+				82662B59111CC0BB259946BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 114.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4D553B7F737D181B70EC442E /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 3B3FA574B6001B84350307A9 /* Project object */;
+}

@@ -1,0 +1,163 @@
+package com.chogm.discord.models
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+
+@Serializable
+data class RegisterRequest(
+    val email: String,
+    val username: String,
+    val displayName: String,
+    val password: String
+)
+
+@Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class AuthResponse(
+    val token: String,
+    val user: UserResponse
+)
+
+@Serializable
+data class UserResponse(
+    val id: String,
+    val email: String,
+    val username: String,
+    val displayName: String,
+    val createdAt: String
+)
+
+@Serializable
+data class UserLookupResponse(
+    val id: String,
+    val username: String,
+    val displayName: String
+)
+
+@Serializable
+data class FriendRequestCreateRequest(
+    val addresseeId: String
+)
+
+@Serializable
+data class FriendRequestResponse(
+    val id: String,
+    val requesterId: String,
+    val addresseeId: String,
+    val status: FriendRequestStatus,
+    val createdAt: String,
+    val respondedAt: String? = null
+)
+
+@Serializable
+data class FriendResponse(
+    val id: String,
+    val username: String,
+    val displayName: String
+)
+
+@Serializable
+data class ChannelCreateRequest(
+    val name: String,
+    val type: ChannelType
+)
+
+@Serializable
+data class ChannelResponse(
+    val id: String,
+    val name: String,
+    val type: ChannelType,
+    val createdBy: String,
+    val createdAt: String
+)
+
+@Serializable
+data class ChatMessageRequest(
+    val content: String
+)
+
+@Serializable
+data class ChatMessageResponse(
+    val id: String,
+    val channelId: String,
+    val senderId: String,
+    val content: String,
+    val createdAt: String
+)
+
+@Serializable
+data class DirectMessageSendRequest(
+    val toUserId: String,
+    val content: String
+)
+
+@Serializable
+data class DirectThreadResponse(
+    val channelId: String,
+    val friendId: String,
+    val friendUsername: String,
+    val friendDisplayName: String,
+    val lastMessage: ChatMessageResponse? = null
+)
+
+@Serializable
+data class DirectMessageResponse(
+    val channelId: String,
+    val message: ChatMessageResponse
+)
+
+@Serializable
+data class DeviceTokenRequest(
+    val platform: String,
+    val token: String,
+    val voipToken: String? = null
+)
+
+@Serializable
+data class IceServerConfig(
+    val urls: List<String>,
+    val username: String? = null,
+    val credential: String? = null
+)
+
+@Serializable
+data class IceConfigResponse(
+    val iceServers: List<IceServerConfig>
+)
+
+@Serializable
+data class SignalEnvelope(
+    val type: String,
+    val targetUserId: String? = null,
+    val fromUserId: String? = null,
+    val payload: JsonElement? = null
+)
+
+@Serializable
+data class SignalError(
+    val error: String
+)
+
+@Serializable
+data class ErrorResponse(
+    val error: String
+)
+
+@Serializable
+enum class ChannelType {
+    TEXT,
+    VOICE,
+    DIRECT
+}
+
+@Serializable
+enum class FriendRequestStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
+}

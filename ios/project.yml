@@ -1,0 +1,65 @@
+name: DiscordLite
+
+options:
+  bundleIdPrefix: com.chogm
+  xcodeVersion: "26.2"
+  deploymentTarget:
+    iOS: "16.0"
+
+settings:
+  base:
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0.0
+    SWIFT_VERSION: 5.0
+
+packages:
+  WebRTC:
+    url: https://github.com/stasel/WebRTC
+    from: 114.0.0
+
+targets:
+  DiscordLite:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: .
+        excludes:
+          - project.yml
+          - Info.plist
+          - DiscordLite.xcodeproj
+          - build
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: "Discord Lite"
+        LSRequiresIPhoneOS: true
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSAppTransportSecurity:
+          NSExceptionDomains:
+            127.0.0.1:
+              NSExceptionAllowsInsecureHTTPLoads: true
+            localhost:
+              NSExceptionAllowsInsecureHTTPLoads: true
+    entitlements:
+      path: DiscordLite.entitlements
+      properties:
+        aps-environment: development
+    dependencies:
+      - package: WebRTC
+    capabilities:
+      backgroundModes:
+        - audio
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
