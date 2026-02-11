@@ -8,6 +8,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
     fun init(config: DbConfig) {
+        require(config.user.isNotBlank()) { "DB_USER is required" }
+        require(config.password.isNotBlank()) { "DB_PASSWORD is required" }
+
         val hikariConfig = HikariConfig().apply {
             jdbcUrl = config.url
             username = config.user
