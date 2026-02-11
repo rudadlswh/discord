@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -665,20 +664,6 @@ private fun MessagesScreen(
 
                 AddFriendPill(onClick = onAddFriend)
 
-                Row(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    AvatarCircle("N", 46, DiscordColors.AccentBlue)
-                    Spacer(modifier = Modifier.width(10.dp))
-                    AvatarCircle("T", 46, DiscordColors.DarkSurfaceAlt)
-                    Spacer(modifier = Modifier.width(10.dp))
-                    AvatarCircle("D", 46, DiscordColors.DarkSurfaceAlt)
-                    Spacer(modifier = Modifier.width(10.dp))
-                    AvatarCircle("K", 46, DiscordColors.DarkSurfaceAlt)
-                }
-
                 Text(
                     text = stringResource(id = R.string.messages_section),
                     color = DiscordColors.TextSecondaryDark,
@@ -749,13 +734,6 @@ private fun ServerRail() {
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AvatarCircle("D", 44, DiscordColors.AccentBlue)
-        Spacer(modifier = Modifier.height(14.dp))
-        AvatarCircle("k", 44, DiscordColors.DarkSurfaceAlt)
-        Spacer(modifier = Modifier.height(12.dp))
-        AvatarCircle("z", 44, DiscordColors.DarkSurfaceAlt)
-        Spacer(modifier = Modifier.height(12.dp))
-
         Box(
             modifier = Modifier
                 .size(44.dp)
@@ -998,126 +976,6 @@ private fun NotificationsScreen(
             }
         }
 
-        AppCard(modifier = Modifier.padding(top = 16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(DiscordColors.AccentBlue, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_nav_message),
-                        contentDescription = stringResource(id = R.string.notifications_message),
-                        tint = DiscordColors.TextPrimaryDark,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.notifications_message),
-                        color = DiscordColors.TextPrimaryDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(id = R.string.notifications_message_subtitle),
-                        color = DiscordColors.TextSecondaryDark,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-
-                Text(
-                    text = stringResource(id = R.string.notifications_message_time),
-                    color = DiscordColors.TextMutedDark,
-                    fontSize = 11.sp
-                )
-            }
-        }
-
-        Text(
-            text = stringResource(id = R.string.notifications_recommended),
-            color = DiscordColors.TextSecondaryDark,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 20.dp)
-        )
-
-        AppCard(modifier = Modifier.padding(top = 12.dp)) {
-            Column {
-                RecommendedFriendRow(
-                    initial = "B",
-                    name = stringResource(id = R.string.notifications_friend_1),
-                    tag = stringResource(id = R.string.notifications_friend_1_tag),
-                    highlight = true
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                RecommendedFriendRow(
-                    initial = "A",
-                    name = stringResource(id = R.string.notifications_friend_2),
-                    tag = stringResource(id = R.string.notifications_friend_2_tag),
-                    highlight = false
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = R.string.notifications_show_all),
-                color = DiscordColors.AccentBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chevron_right),
-                contentDescription = stringResource(id = R.string.notifications_show_all),
-                tint = DiscordColors.TextSecondaryDark,
-                modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun RecommendedFriendRow(initial: String, name: String, tag: String, highlight: Boolean) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AvatarCircle(initial, 38, if (highlight) DiscordColors.AccentBlue else DiscordColors.DarkSurfaceAlt)
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 10.dp)
-        ) {
-            Text(text = name, color = DiscordColors.TextPrimaryDark, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-            Text(text = tag, color = DiscordColors.TextSecondaryDark, fontSize = 11.sp)
-        }
-        Box(
-            modifier = Modifier
-                .height(32.dp)
-                .background(DiscordColors.DarkSurfaceAlt, RoundedCornerShape(16.dp))
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.notifications_add),
-                color = DiscordColors.TextPrimaryDark,
-                fontSize = 12.sp
-            )
-        }
     }
 }
 
@@ -1249,70 +1107,6 @@ private fun ProfileScreen(onLogout: () -> Unit, onShowFriends: () -> Unit) {
                 }
             }
 
-            AppCard(modifier = Modifier.padding(top = 16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_calendar),
-                        contentDescription = stringResource(id = R.string.profile_joined),
-                        tint = DiscordColors.TextSecondaryDark,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Column(modifier = Modifier.padding(start = 10.dp)) {
-                        Text(
-                            text = stringResource(id = R.string.profile_joined),
-                            color = DiscordColors.TextSecondaryDark,
-                            fontSize = 11.sp
-                        )
-                        Text(
-                            text = stringResource(id = R.string.profile_joined_date),
-                            color = DiscordColors.TextPrimaryDark,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
-                }
-            }
-
-            SectionHeader(
-                text = stringResource(id = R.string.profile_connections),
-                modifier = Modifier.padding(top = 18.dp)
-            )
-
-            AppCard(modifier = Modifier.padding(top = 10.dp)) {
-                Column {
-                    ConnectionRow(stringResource(id = R.string.profile_connection_1))
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ConnectionRow(stringResource(id = R.string.profile_connection_2))
-                }
-            }
-
-            SectionHeader(
-                text = stringResource(id = R.string.profile_friends),
-                modifier = Modifier.padding(top = 18.dp)
-            )
-
-            AppCard(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .clickable(onClick = onShowFriends)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AvatarCircle("J", 32, DiscordColors.AccentBlue)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    AvatarCircle("K", 32, DiscordColors.DarkSurfaceAlt)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    AvatarCircle("D", 32, DiscordColors.DarkSurfaceAlt)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_chevron_right),
-                        contentDescription = stringResource(id = R.string.profile_friends),
-                        tint = DiscordColors.TextSecondaryDark,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
             SectionHeader(
                 text = stringResource(id = R.string.profile_notes),
                 modifier = Modifier.padding(top = 18.dp)
@@ -1352,32 +1146,6 @@ private fun ProfileScreen(onLogout: () -> Unit, onShowFriends: () -> Unit) {
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ConnectionRow(title: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_link),
-            contentDescription = title,
-            tint = DiscordColors.TextSecondaryDark,
-            modifier = Modifier.size(20.dp)
-        )
-        Text(
-            text = title,
-            color = DiscordColors.TextPrimaryDark,
-            fontSize = 13.sp,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 10.dp)
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_chevron_right),
-            contentDescription = title,
-            tint = DiscordColors.TextSecondaryDark,
-            modifier = Modifier.size(16.dp)
-        )
     }
 }
 
