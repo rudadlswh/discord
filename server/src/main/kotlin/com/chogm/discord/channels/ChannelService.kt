@@ -10,6 +10,8 @@ import java.time.Instant
 import java.util.UUID
 
 class ChannelService {
+    private val maxMessageBytes = 4000
+
     fun createChannel(userId: String, request: ChannelCreateRequest): ChannelResponse {
         return transaction {
             val exists = Users.select { Users.id eq userId }.count() > 0
@@ -104,6 +106,12 @@ class ChannelService {
     fun postMessage(userId: String, channelId: String, content: String): ChatMessageResponse {
         if (content.isBlank()) {
             throw ServiceException(HttpStatusCode.BadRequest, "Message cannot be empty")
+        }
+        if (content.toByteArray(Charsets.UTF_8).size > maxMessageBytes) {
+            throw ServiceException(
+                HttpStatusCode.BadRequest,
+                "Message too long (max ${maxMessageBytes} bytes)"
+            )
         }
 
         return transaction {

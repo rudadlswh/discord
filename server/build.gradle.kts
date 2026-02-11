@@ -58,6 +58,8 @@ dependencies {
     implementation("com.oracle.database.jdbc:ojdbc11:$ojdbcVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("com.google.firebase:firebase-admin:9.3.0")
+    implementation("com.eatthepath:pushy:0.15.4")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation(kotlin("test"))

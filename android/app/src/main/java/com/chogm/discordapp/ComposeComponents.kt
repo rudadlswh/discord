@@ -23,8 +23,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -32,7 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PrimaryButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
+fun PrimaryButton(
+    text: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         enabled = enabled,
@@ -42,7 +49,7 @@ fun PrimaryButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
             contentColor = DiscordColors.ButtonPrimaryText,
             disabledContainerColor = DiscordColors.ButtonPrimary.copy(alpha = 0.5f)
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
     ) {
@@ -51,7 +58,12 @@ fun PrimaryButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
 }
 
 @Composable
-fun SecondaryButton(text: String, onClick: () -> Unit, enabled: Boolean = true) {
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         enabled = enabled,
@@ -61,7 +73,7 @@ fun SecondaryButton(text: String, onClick: () -> Unit, enabled: Boolean = true) 
             containerColor = DiscordColors.ButtonSecondary,
             contentColor = DiscordColors.ButtonSecondaryText
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
     ) {
@@ -212,10 +224,13 @@ fun IconBubble(icon: Painter, modifier: Modifier = Modifier) {
 @Composable
 fun TopBackButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Text(
-            text = "←",
-            fontSize = 20.sp,
-            color = DiscordColors.TextPrimary
+        Icon(
+            painter = painterResource(id = R.drawable.ic_chevron_right),
+            contentDescription = null,
+            tint = DiscordColors.TextPrimary,
+            modifier = Modifier
+                .size(20.dp)
+                .rotate(180f)
         )
     }
 }

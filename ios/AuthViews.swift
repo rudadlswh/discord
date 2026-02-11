@@ -124,7 +124,6 @@ struct LoginView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var password = ""
-    @State private var baseUrl = AppPrefs.getBaseUrl(defaultValue: AuthService.defaultBaseUrl)
     @State private var errorMessage: String? = nil
     @State private var isLoading = false
     @State private var animateIn = false
@@ -145,15 +144,6 @@ struct LoginView: View {
                 Text("Glad to see you again.")
                     .font(AppFont.body(14))
                     .foregroundColor(AppTheme.lightTextSecondary)
-
-                RoundedTextField(
-                    label: "서버 주소",
-                    placeholder: "http://192.168.0.2:8080",
-                    text: $baseUrl,
-                    keyboardType: .URL,
-                    textContentType: .URL
-                )
-                .padding(.top, 8)
 
                 RoundedTextField(
                     label: "Email or Phone",
@@ -181,25 +171,23 @@ struct LoginView: View {
 
                 PrimaryButton(title: isLoading ? "Logging in..." : "Log in", isEnabled: !isLoading) {
                     let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let trimmedBaseUrl = baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
                     if trimmedEmail.isEmpty || password.isEmpty {
                         errorMessage = "Please enter your email and password."
                         return
                     }
-                    if trimmedBaseUrl.isEmpty {
-                        errorMessage = "서버 주소를 입력하세요."
-                        return
-                    }
                     errorMessage = nil
 
-                    AppPrefs.setBaseUrl(trimmedBaseUrl)
+                    let storedBaseUrl = AppPrefs.getBaseUrl(defaultValue: AuthService.defaultBaseUrl)
+                    let trimmedBaseUrl = storedBaseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let resolvedBaseUrl = trimmedBaseUrl.isEmpty ? AuthService.defaultBaseUrl : trimmedBaseUrl
+                    AppPrefs.setBaseUrl(resolvedBaseUrl)
                     Task { @MainActor in
                         isLoading = true
                         do {
                             let payload = try await AuthService.login(
                                 email: trimmedEmail,
                                 password: password,
-                                baseUrl: trimmedBaseUrl
+                                baseUrl: resolvedBaseUrl
                             )
                             AppPrefs.saveAuth(
                                 token: payload.token,
@@ -207,7 +195,8 @@ struct LoginView: View {
                                 username: payload.username,
                                 displayName: payload.displayName
                             )
-                            AppPrefs.setBaseUrl(trimmedBaseUrl)
+                            AppPrefs.setBaseUrl(resolvedBaseUrl)
+                            CallManager.shared.registerDeviceIfNeeded()
                             onSuccess()
                         } catch {
                             errorMessage = error.localizedDescription
@@ -255,15 +244,6 @@ struct RegisterEmailView: View {
                     .foregroundColor(AppTheme.lightTextPrimary)
                     .frame(maxWidth: .infinity, alignment: .center)
 
-                RoundedTextField(
-                    label: "서버 주소",
-                    placeholder: "http://192.168.0.2:8080",
-                    text: $draft.baseUrl,
-                    keyboardType: .URL,
-                    textContentType: .URL
-                )
-                .padding(.top, 4)
-
                 SegmentedToggle(
                     options: ["Phone", "Email"],
                     selection: Binding(
@@ -305,11 +285,6 @@ struct RegisterEmailView: View {
 
                 PrimaryButton(title: "Next") {
                     let value = draft.useEmail ? draft.email : draft.phone
-                    let trimmedBaseUrl = draft.baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if trimmedBaseUrl.isEmpty {
-                        errorMessage = "서버 주소를 입력하세요."
-                        return
-                    }
                     if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         errorMessage = draft.useEmail ? "Please enter your email." : "Please enter your phone."
                         return
@@ -325,7 +300,10 @@ struct RegisterEmailView: View {
             .animation(.easeOut(duration: 0.5), value: animateIn)
         }
         .background(AppTheme.lightBackground.ignoresSafeArea())
-        .onAppear { animateIn = true }
+        .onAppear {
+            animateIn = true
+            draft.baseUrl = AppPrefs.getBaseUrl(defaultValue: AuthService.defaultBaseUrl)
+        }
         .navigationBarBackButtonHidden(true)
     }
 }
@@ -478,7 +456,8 @@ struct RegisterDisplayNameView: View {
         let email = identifier.trimmingCharacters(in: .whitespacesAndNewlines)
         let username = draft.username.trimmingCharacters(in: .whitespacesAndNewlines)
         let password = draft.password
-        let baseUrl = draft.baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedBaseUrl = draft.baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        let baseUrl = trimmedBaseUrl.isEmpty ? AuthService.defaultBaseUrl : trimmedBaseUrl
 
         if email.isEmpty {
             errorMessage = "Please enter your email."
@@ -490,10 +469,6 @@ struct RegisterDisplayNameView: View {
         }
         if password.isEmpty {
             errorMessage = "Please enter your password."
-            return
-        }
-        if baseUrl.isEmpty {
-            errorMessage = "서버 주소를 입력하세요."
             return
         }
 
@@ -516,6 +491,7 @@ struct RegisterDisplayNameView: View {
                     displayName: payload.displayName
                 )
                 AppPrefs.setBaseUrl(baseUrl)
+                CallManager.shared.registerDeviceIfNeeded()
                 onComplete()
             } catch {
                 errorMessage = error.localizedDescription

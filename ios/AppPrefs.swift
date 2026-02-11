@@ -8,6 +8,8 @@ enum AppPrefs {
     private static let keyBaseUrl = "base_url"
     private static let keySeenFriendRequests = "seen_friend_requests"
     private static let keySeenMessageIds = "seen_message_ids"
+    private static let keyActiveChannelId = "active_channel_id"
+    private static let keyVoipToken = "voip_token"
 
     private static let defaults = UserDefaults.standard
 
@@ -47,6 +49,32 @@ enum AppPrefs {
 
     static func setBaseUrl(_ value: String) {
         defaults.set(value, forKey: keyBaseUrl)
+    }
+
+    static func getActiveChannelId() -> String? {
+        defaults.string(forKey: keyActiveChannelId)
+    }
+
+    static func setActiveChannelId(_ value: String?) {
+        let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if trimmed.isEmpty {
+            defaults.removeObject(forKey: keyActiveChannelId)
+        } else {
+            defaults.set(trimmed, forKey: keyActiveChannelId)
+        }
+    }
+
+    static func getVoipToken() -> String? {
+        defaults.string(forKey: keyVoipToken)
+    }
+
+    static func setVoipToken(_ value: String?) {
+        let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if trimmed.isEmpty {
+            defaults.removeObject(forKey: keyVoipToken)
+        } else {
+            defaults.set(trimmed, forKey: keyVoipToken)
+        }
     }
 
     private static func seenFriendRequestsKey() -> String {
