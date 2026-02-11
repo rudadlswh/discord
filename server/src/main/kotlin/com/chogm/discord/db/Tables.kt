@@ -61,6 +61,17 @@ object Messages : Table("messages") {
     override val primaryKey = PrimaryKey(id)
 }
 
+object DeviceTokens : Table("device_tokens") {
+    val id = varchar("id", 36)
+    val userId = varchar("user_id", 36).index()
+    val platform = varchar("platform", 16).index()
+    val token = varchar("token", 255)
+    val voipToken = varchar("voip_token", 255).nullable()
+    val updatedAt = timestamp("updated_at")
+
+    override val primaryKey = PrimaryKey(id)
+}
+
 object CallSessions : Table("call_sessions") {
     val id = varchar("id", 36)
     val channelId = varchar("channel_id", 36)

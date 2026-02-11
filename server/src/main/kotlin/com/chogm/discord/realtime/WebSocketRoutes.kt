@@ -6,6 +6,9 @@ import com.chogm.discord.channels.ChannelService
 import com.chogm.discord.models.ChatMessageRequest
 import com.chogm.discord.models.SignalEnvelope
 import com.chogm.discord.models.SignalError
+import com.chogm.discord.push.CallPushPayload
+import com.chogm.discord.push.PushService
+import com.chogm.discord.users.UserService
 import com.chogm.discord.users.requireUserId
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -15,8 +18,16 @@ import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService: ChannelService) {
+fun Route.webSocketRoutes(
+    chatHub: ChatHub,
+    signalHub: SignalHub,
+    channelService: ChannelService,
+    pushService: PushService,
+    userService: UserService
+) {
     authenticate("auth-jwt") {
         webSocket("/ws/chat/{channelId}") {
             val userId = call.requireUserId()
@@ -28,17 +39,22 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
             try {
                 for (frame in incoming) {
                     if (frame is io.ktor.websocket.Frame.Text) {
-                        val request = JsonSupport.json.decodeFromString(
-                            ChatMessageRequest.serializer(),
-                            frame.readText()
-                        )
-                        val message = channelService.postMessage(userId, channelId, request.content)
-                        chatHub.broadcast(channelId, message)
+                        try {
+                            val request = JsonSupport.json.decodeFromString(
+                                ChatMessageRequest.serializer(),
+                                frame.readText()
+                            )
+                            val message = channelService.postMessage(userId, channelId, request.content)
+                            chatHub.broadcast(channelId, message)
+                        } catch (ex: ServiceException) {
+                            val error = SignalError(ex.message)
+                            send(JsonSupport.json.encodeToString(SignalError.serializer(), error))
+                        } catch (ex: Exception) {
+                            val error = SignalError(ex.message ?: "Message error")
+                            send(JsonSupport.json.encodeToString(SignalError.serializer(), error))
+                        }
                     }
                 }
-            } catch (ex: ServiceException) {
-                val error = SignalError(ex.message)
-                send(JsonSupport.json.encodeToString(SignalError.serializer(), error))
             } finally {
                 chatHub.leave(channelId, userId, this)
             }
@@ -58,7 +74,26 @@ fun Route.webSocketRoutes(chatHub: ChatHub, signalHub: SignalHub, channelService
                             SignalEnvelope.serializer(),
                             frame.readText()
                         )
-                        signalHub.forward(channelId, userId, envelope)
+                        val delivered = signalHub.forward(channelId, userId, envelope)
+                        if (!delivered && envelope.type == "call_request" && envelope.targetUserId != null) {
+                            val callId = envelope.payload
+                                ?.jsonObject
+                                ?.get("callId")
+                                ?.jsonPrimitive
+                                ?.content
+                            if (!callId.isNullOrBlank()) {
+                                val callerName = userService.getDisplayName(userId) ?: "Unknown"
+                                pushService.sendIncomingCall(
+                                    envelope.targetUserId,
+                                    CallPushPayload(
+                                        callId = callId,
+                                        channelId = channelId,
+                                        fromUserId = userId,
+                                        callerName = callerName
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             } catch (ex: Exception) {

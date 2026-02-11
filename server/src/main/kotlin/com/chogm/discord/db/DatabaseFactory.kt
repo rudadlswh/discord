@@ -30,6 +30,7 @@ object DatabaseFactory {
                     Channels,
                     ChannelMembers,
                     Messages,
+                    DeviceTokens,
                     CallSessions,
                     CallParticipants
                 )

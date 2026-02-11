@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "285243653095",
+    "project_id": "discord-lite-7f55d",
+    "storage_bucket": "discord-lite-7f55d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285243653095:android:433f864d2dfce38296db42",
+        "android_client_info": {
+          "package_name": "com.chogm.discordapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlMV1F5Z1MeMRyjp2iI0w7VoNTlkaxsas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

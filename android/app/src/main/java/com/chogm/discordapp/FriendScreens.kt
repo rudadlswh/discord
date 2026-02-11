@@ -1,6 +1,9 @@
 package com.chogm.discordapp
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -14,11 +17,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CallEnd
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -26,17 +37,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -45,6 +60,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -116,6 +133,178 @@ private data class PendingFriendRequest(
     val username: String
 )
 
+private const val MAX_MESSAGE_BYTES = 4000
+private const val CALL_REQUEST_PREFIX = "[CALL_REQUEST]"
+private const val CALL_REQUEST_LABEL = "음성채팅 요청"
+
+private data class CallRequestMessage(
+    val callId: String,
+    val label: String
+)
+
+private fun displayInitial(name: String): String {
+    val trimmed = name.trim()
+    if (trimmed.isBlank()) {
+        return "?"
+    }
+    return trimmed.first().uppercaseChar().toString()
+}
+
+private fun parseCallRequestMessage(content: String): CallRequestMessage? {
+    if (!content.startsWith(CALL_REQUEST_PREFIX)) {
+        return null
+    }
+    val payload = content.removePrefix(CALL_REQUEST_PREFIX)
+    val parts = payload.split("|", limit = 2)
+    val callId = parts.getOrNull(0)?.trim().orEmpty()
+    if (callId.isBlank()) {
+        return null
+    }
+    val label = parts.getOrNull(1)?.trim().orEmpty()
+    return CallRequestMessage(
+        callId = callId,
+        label = if (label.isBlank()) CALL_REQUEST_LABEL else label
+    )
+}
+
+@Composable
+private fun CallPanel(
+    state: CallState,
+    friendName: String,
+    selfName: String,
+    isOutgoing: Boolean,
+    isMicMuted: Boolean,
+    onAccept: () -> Unit,
+    onDecline: () -> Unit,
+    onEnd: () -> Unit,
+    onToggleMic: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val status = when (state) {
+        CallState.INCOMING -> "통화 요청"
+        CallState.OUTGOING -> "연결 중..."
+        CallState.CONNECTING -> "연결 중..."
+        CallState.CONNECTED -> "통화 중"
+        CallState.IDLE -> ""
+    }
+    val callerName = if (isOutgoing) selfName else friendName
+    val receiverName = if (isOutgoing) friendName else selfName
+
+    AppCard(modifier = modifier, background = DiscordColors.DarkSurfaceAlt) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "음성 채팅",
+                color = DiscordColors.TextPrimaryDark,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp
+            )
+            Text(
+                text = status,
+                color = DiscordColors.TextSecondaryDark,
+                fontSize = 12.sp
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "발신자",
+                        color = DiscordColors.TextMutedDark,
+                        fontSize = 11.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    AvatarCircle(
+                        text = displayInitial(callerName),
+                        size = 56,
+                        background = DiscordColors.AccentBlue
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = callerName,
+                        color = DiscordColors.TextPrimaryDark,
+                        fontSize = 12.sp
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "수신자",
+                        color = DiscordColors.TextMutedDark,
+                        fontSize = 11.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    AvatarCircle(
+                        text = displayInitial(receiverName),
+                        size = 56,
+                        background = DiscordColors.DarkSurface
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = receiverName,
+                        color = DiscordColors.TextPrimaryDark,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .background(DiscordColors.DarkSurface, RoundedCornerShape(12.dp))
+                    .clickable(onClick = onToggleMic)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = if (isMicMuted) Icons.Default.MicOff else Icons.Default.Mic,
+                        contentDescription = null,
+                        tint = if (isMicMuted) Color.Red else DiscordColors.AccentBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isMicMuted) "마이크 꺼짐" else "마이크 켜짐",
+                        color = DiscordColors.TextPrimaryDark,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            if (state == CallState.INCOMING) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    PrimaryButton(
+                        text = "수락",
+                        enabled = true,
+                        onClick = onAccept,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SecondaryButton(
+                        text = "거절",
+                        enabled = true,
+                        onClick = onDecline,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            } else if (state != CallState.IDLE) {
+                SecondaryButton(
+                    text = "통화 종료",
+                    enabled = true,
+                    onClick = onEnd,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriendHomeScreen(onLogout: () -> Unit) {
@@ -139,7 +328,6 @@ fun FriendHomeScreen(onLogout: () -> Unit) {
     var directThreads by remember { mutableStateOf<List<DirectThread>>(emptyList()) }
     var threadsLoading by remember { mutableStateOf(false) }
     var threadsError by remember { mutableStateOf<String?>(null) }
-
     suspend fun fetchAndUpdateRequests(showLoading: Boolean) {
         if (showLoading) {
             requestsLoading = true
@@ -1731,6 +1919,10 @@ private fun ComposeMessageSheet(
                     errorMessage = context.getString(R.string.messages_compose_missing_message)
                     return@PrimaryButton
                 }
+                if (trimmed.toByteArray(Charsets.UTF_8).size > MAX_MESSAGE_BYTES) {
+                    errorMessage = context.getString(R.string.chat_message_too_long)
+                    return@PrimaryButton
+                }
                 scope.launch {
                     isSending = true
                     errorMessage = null
@@ -1762,6 +1954,13 @@ private fun DirectChatScreen(
     var input by remember { mutableStateOf("") }
     var isSending by remember { mutableStateOf(false) }
     var chatSocket by remember { mutableStateOf<ChatSocket?>(null) }
+    val callState by CallManager.state.collectAsState()
+    val activeCall by CallManager.activeCall.collectAsState()
+    val isMicMuted by CallManager.isMicMuted.collectAsState()
+    val scrollState = rememberScrollState()
+    val isActiveCall = activeCall?.channelId == thread.channelId
+    val stateForThread = if (isActiveCall) callState else CallState.IDLE
+    val hasOtherCall = callState != CallState.IDLE && !isActiveCall
 
     suspend fun loadMessages(showLoading: Boolean) {
         if (showLoading) {
@@ -1783,8 +1982,103 @@ private fun DirectChatScreen(
         }
     }
 
+    fun sendCallRequestMessage() {
+        val callId = CallManager.activeCall.value?.callId ?: return
+        val content = "$CALL_REQUEST_PREFIX$callId|$CALL_REQUEST_LABEL"
+        scope.launch {
+            val socket = chatSocket
+            val sent = socket?.sendMessage(content) ?: false
+            val result = if (!sent) {
+                sendChannelMessage(context, thread.channelId, content)
+            } else {
+                null
+            }
+            if (result != null) {
+                if (result.errorMessage != null) {
+                    errorMessage = result.errorMessage
+                    return@launch
+                }
+                val message = result.message
+                if (message != null && messages.none { it.id == message.id }) {
+                    messages = messages + message
+                    val userId = AppPrefs.getUserId(context)
+                    if (!userId.isNullOrBlank()) {
+                        AppPrefs.addSeenMessageIds(context, userId, setOf(message.id))
+                    }
+                }
+            }
+        }
+    }
+
+    fun ensureAudioPermission(): Boolean {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            return true
+        }
+        val activity = context as? Activity
+        if (activity != null) {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1201)
+        }
+        errorMessage = "마이크 권한이 필요합니다."
+        return false
+    }
+
+    fun joinCallFromMessage(callId: String) {
+        if (!ensureAudioPermission()) {
+            return
+        }
+        if (callState == CallState.IDLE) {
+            CallManager.handleIncomingCall(
+                context,
+                callId,
+                thread.channelId,
+                thread.friendId,
+                thread.friendDisplayName,
+                notify = false
+            )
+        }
+        CallManager.acceptIncomingCall(context)
+    }
+
+    fun startOutgoingCall() {
+        if (callState != CallState.IDLE) {
+            return
+        }
+        if (!ensureAudioPermission()) {
+            return
+        }
+        CallManager.startOutgoingCall(
+            context = context,
+            channelId = thread.channelId,
+            friendId = thread.friendId,
+            friendName = thread.friendDisplayName
+        )
+        sendCallRequestMessage()
+    }
+
+    fun endCall() {
+        CallManager.endCall(context)
+    }
+
+    fun acceptIncomingCall() {
+        if (!ensureAudioPermission()) {
+            return
+        }
+        CallManager.acceptIncomingCall(context)
+    }
+
+    fun rejectIncomingCall() {
+        CallManager.rejectIncomingCall(context)
+    }
+
     LaunchedEffect(thread.channelId) {
         loadMessages(true)
+    }
+
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            withFrameNanos { }
+            scrollState.scrollTo(scrollState.maxValue)
+        }
     }
 
     DisposableEffect(thread.channelId) {
@@ -1828,32 +2122,96 @@ private fun DirectChatScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "←",
-                color = DiscordColors.TextPrimaryDark,
-                fontSize = 20.sp,
+            Box(
                 modifier = Modifier
                     .padding(end = 12.dp)
-                    .clickable(onClick = onBack)
-            )
+                    .size(36.dp)
+                    .background(DiscordColors.DarkSurfaceAlt, CircleShape)
+                    .clickable(onClick = onBack),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_chevron_right),
+                    contentDescription = null,
+                    tint = DiscordColors.TextPrimaryDark,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(180f)
+                )
+            }
             Text(
                 text = thread.friendDisplayName,
                 color = DiscordColors.TextPrimaryDark,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.weight(1f))
+            if (stateForThread == CallState.OUTGOING || stateForThread == CallState.CONNECTING) {
+                CircularProgressIndicator(
+                    color = DiscordColors.TextPrimaryDark,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .size(18.dp)
+                        .padding(end = 8.dp)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(DiscordColors.DarkSurfaceAlt, CircleShape)
+                    .clickable(enabled = stateForThread != CallState.INCOMING && !hasOtherCall) {
+                        when (stateForThread) {
+                            CallState.IDLE -> startOutgoingCall()
+                            CallState.OUTGOING, CallState.CONNECTING, CallState.CONNECTED -> endCall()
+                            CallState.INCOMING -> Unit
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (stateForThread == CallState.CONNECTED) Icons.Default.CallEnd else Icons.Default.Call,
+                    contentDescription = null,
+                    tint = if (stateForThread == CallState.INCOMING || hasOtherCall) {
+                        DiscordColors.TextMutedDark
+                    } else {
+                        DiscordColors.TextPrimaryDark
+                    },
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
 
         HorizontalDivider(color = DiscordColors.DarkBorder, thickness = 1.dp)
+
+        if (stateForThread != CallState.IDLE) {
+            val selfName = AppPrefs.getDisplayName(context)
+                ?: AppPrefs.getUsername(context)
+                ?: "나"
+            CallPanel(
+                state = stateForThread,
+                friendName = thread.friendDisplayName,
+                selfName = selfName,
+                isOutgoing = activeCall?.isOutgoing ?: false,
+                isMicMuted = isMicMuted,
+                onAccept = { acceptIncomingCall() },
+                onDecline = { rejectIncomingCall() },
+                onEnd = { endCall() },
+                onToggleMic = { CallManager.toggleMic() },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .fillMaxWidth()
+            )
+        }
 
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         ) {
             if (isLoading) {
                 Text(
@@ -1882,6 +2240,7 @@ private fun DirectChatScreen(
 
             messages.forEach { message ->
                 val isSelf = !currentUserId.isNullOrBlank() && message.senderId == currentUserId
+                val callRequest = parseCallRequestMessage(message.content)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = if (isSelf) Arrangement.End else Arrangement.Start
@@ -1894,11 +2253,30 @@ private fun DirectChatScreen(
                             )
                             .padding(horizontal = 12.dp, vertical = 8.dp)
                     ) {
-                        Text(
-                            text = message.content,
-                            color = DiscordColors.TextPrimaryDark,
-                            fontSize = 13.sp
-                        )
+                        if (callRequest != null) {
+                            Column {
+                                Text(
+                                    text = callRequest.label,
+                                    color = DiscordColors.TextPrimaryDark,
+                                    fontSize = 13.sp
+                                )
+                                if (!isSelf) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    TextButton(
+                                        onClick = { joinCallFromMessage(callRequest.callId) },
+                                        enabled = callState == CallState.IDLE || callState == CallState.INCOMING
+                                    ) {
+                                        Text(text = "참가", color = DiscordColors.AccentBlue)
+                                    }
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = message.content,
+                                color = DiscordColors.TextPrimaryDark,
+                                fontSize = 13.sp
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -1946,6 +2324,10 @@ private fun DirectChatScreen(
                         if (trimmed.isBlank()) {
                             return@clickable
                         }
+                        if (trimmed.toByteArray(Charsets.UTF_8).size > MAX_MESSAGE_BYTES) {
+                            errorMessage = context.getString(R.string.chat_message_too_long)
+                            return@clickable
+                        }
                         scope.launch {
                             isSending = true
                             val socket = chatSocket
@@ -1985,6 +2367,36 @@ private fun DirectChatScreen(
                 )
             }
         }
+    }
+
+    if (stateForThread == CallState.INCOMING) {
+        AlertDialog(
+            onDismissRequest = { rejectIncomingCall() },
+            title = {
+                Text(
+                    text = "음성 통화",
+                    color = DiscordColors.TextPrimaryDark,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "${thread.friendDisplayName}님이 통화를 요청했어요.",
+                    color = DiscordColors.TextSecondaryDark,
+                    fontSize = 12.sp
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { acceptIncomingCall() }) {
+                    Text(text = "수락", color = DiscordColors.AccentBlue)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { rejectIncomingCall() }) {
+                    Text(text = "거절", color = Color.Red)
+                }
+            }
+        )
     }
 }
 

@@ -7,6 +7,11 @@ REPO_ROOT=$(cd -- "$SCRIPT_DIR/.." && pwd)
 AVD_NAME="${1:-Medium_Phone_API_36.0}"
 EMULATOR_BIN="${EMULATOR_BIN:-$HOME/Library/Android/sdk/emulator/emulator}"
 ADB_BIN="${ADB_BIN:-adb}"
+TURN_ENABLED="${TURN_ENABLED:-1}"
+TURN_URLS_DEFAULT="turn:10.0.2.2:3478?transport=udp,turn:10.0.2.2:3478?transport=tcp"
+TURN_URLS="${TURN_URLS:-$TURN_URLS_DEFAULT}"
+TURN_USERNAME="${TURN_USERNAME:-discord}"
+TURN_PASSWORD="${TURN_PASSWORD:-discord}"
 
 if ! command -v "$ADB_BIN" >/dev/null 2>&1; then
   echo "adb not found in PATH"
@@ -34,10 +39,53 @@ else
   echo "Emulator already running: $running_emulator"
 fi
 
-"$ADB_BIN" wait-for-device
+resolve_target_serial() {
+  if [ -n "${ANDROID_SERIAL:-}" ]; then
+    echo "$ANDROID_SERIAL"
+    return 0
+  fi
+  if [ -n "${ADB_SERIAL:-}" ]; then
+    echo "$ADB_SERIAL"
+    return 0
+  fi
+
+  local devices serial
+  devices=$("$ADB_BIN" devices | awk 'NR>1 && $2=="device" {print $1}')
+  for serial in $devices; do
+    if "$ADB_BIN" -s "$serial" emu avd name 2>/dev/null | grep -Fxq "$AVD_NAME"; then
+      echo "$serial"
+      return 0
+    fi
+  done
+
+  if [ -n "$devices" ] && [ "$(echo "$devices" | wc -l | tr -d ' ')" = "1" ]; then
+    echo "$devices"
+    return 0
+  fi
+
+  return 1
+}
+
+target_serial=""
+for _ in {1..60}; do
+  if target_serial=$(resolve_target_serial); then
+    break
+  fi
+  sleep 2
+done
+
+if [ -z "$target_serial" ]; then
+  echo "Multiple devices/emulators detected. Set ANDROID_SERIAL or ADB_SERIAL."
+  "$ADB_BIN" devices
+  exit 1
+fi
+
+export ANDROID_SERIAL="$target_serial"
+
+"$ADB_BIN" -s "$target_serial" wait-for-device
 
 for _ in {1..60}; do
-  boot_completed=$($ADB_BIN shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+  boot_completed=$($ADB_BIN -s "$target_serial" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
   if [ "$boot_completed" = "1" ]; then
     break
   fi
@@ -56,14 +104,35 @@ if ! command -v gradle >/dev/null 2>&1; then
   exit 1
 fi
 
+if [ "$TURN_ENABLED" = "1" ]; then
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "docker not found in PATH (set TURN_ENABLED=0 to skip TURN)"
+    exit 1
+  fi
+  if ! docker info >/dev/null 2>&1; then
+    echo "Docker daemon not running (set TURN_ENABLED=0 to skip TURN)"
+    exit 1
+  fi
+  echo "Starting TURN server..."
+  docker compose -f "$REPO_ROOT/docker-compose.yml" up -d turn
+fi
+
 echo "Cleaning server build..."
 JAVA_HOME="$JAVA_HOME" gradle -p "$REPO_ROOT/server" clean
 
 echo "Starting server..."
-nohup env JAVA_HOME="$JAVA_HOME" gradle -p "$REPO_ROOT/server" run --no-daemon > /tmp/discord_server.log 2>&1 &
+server_env=(env JAVA_HOME="$JAVA_HOME")
+if [ "$TURN_ENABLED" = "1" ]; then
+  server_env+=(
+    TURN_URLS="$TURN_URLS"
+    TURN_USERNAME="$TURN_USERNAME"
+    TURN_PASSWORD="$TURN_PASSWORD"
+  )
+fi
+nohup "${server_env[@]}" gradle -p "$REPO_ROOT/server" run --no-daemon > /tmp/discord_server.log 2>&1 &
 
 "$REPO_ROOT/android/gradlew" -p "$REPO_ROOT/android" :app:installDebug
 
-"$ADB_BIN" shell am start -n com.chogm.discordapp/.WelcomeActivity
+"$ADB_BIN" -s "$target_serial" shell am start -n com.chogm.discordapp/.WelcomeActivity
 
 echo "Done."

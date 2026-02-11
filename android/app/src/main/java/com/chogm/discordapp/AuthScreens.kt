@@ -251,6 +251,7 @@ fun LoginScreen(onBack: () -> Unit, onLoginSuccess: () -> Unit) {
 
                                 AppPrefs.saveAuth(context, token, userId, username, displayName)
                                 AppPrefs.setBaseUrl(context, baseUrl)
+                                PushTokenManager.refreshToken(context)
                                 "OK"
                             } else {
                                 "ERROR ${response.code}: ${ApiClient.extractErrorMessage(response.body)}"
@@ -597,6 +598,7 @@ fun RegisterDisplayNameScreen(
 
                                 AppPrefs.saveAuth(context, token, userId, savedUsername, savedDisplayName)
                                 AppPrefs.setBaseUrl(context, baseUrl)
+                                PushTokenManager.refreshToken(context)
                                 "OK"
                             } else {
                                 "ERROR ${response.code}: ${ApiClient.extractErrorMessage(response.body)}"

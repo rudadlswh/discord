@@ -22,6 +22,7 @@ enum HomeTab: String, CaseIterable, Identifiable {
 struct HomeTabsView: View {
     var onLogout: () -> Void = {}
     @State private var selectedTab: HomeTab = .home
+    @StateObject private var callManager = CallManager.shared
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,6 +45,12 @@ struct HomeTabsView: View {
             HomeTabBar(selectedTab: $selectedTab)
         }
         .background(AppTheme.darkBackground.ignoresSafeArea())
+        .onAppear {
+            callManager.start()
+        }
+        .onDisappear {
+            callManager.stop()
+        }
     }
 }
 

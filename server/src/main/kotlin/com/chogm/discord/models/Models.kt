@@ -112,6 +112,25 @@ data class DirectMessageResponse(
 )
 
 @Serializable
+data class DeviceTokenRequest(
+    val platform: String,
+    val token: String,
+    val voipToken: String? = null
+)
+
+@Serializable
+data class IceServerConfig(
+    val urls: List<String>,
+    val username: String? = null,
+    val credential: String? = null
+)
+
+@Serializable
+data class IceConfigResponse(
+    val iceServers: List<IceServerConfig>
+)
+
+@Serializable
 data class SignalEnvelope(
     val type: String,
     val targetUserId: String? = null,
