@@ -315,6 +315,8 @@ struct DirectChatView: View {
     let onDismiss: () -> Void
     let onMessageSent: () -> Void
 
+    private let maxMessageBytes = 4000
+    @ObservedObject private var callManager = CallManager.shared
     @State private var messages: [ChatMessage] = []
     @State private var isLoading = false
     @State private var errorMessage: String? = nil
@@ -323,6 +325,9 @@ struct DirectChatView: View {
     @State private var socketTask: URLSessionWebSocketTask? = nil
 
     var body: some View {
+        let currentUserId = AppPrefs.getUserId() ?? ""
+        let callState = callManager.activeCall?.channelId == thread.id ? callManager.state : .idle
+        let hasOtherCall = callManager.state != .idle && callManager.activeCall?.channelId != thread.id
         GeometryReader { proxy in
             VStack(spacing: 0) {
                 HStack(spacing: 12) {
@@ -339,6 +344,21 @@ struct DirectChatView: View {
                         .foregroundColor(AppTheme.textPrimaryDark)
 
                     Spacer()
+
+                    if callState == .outgoing || callState == .connecting {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(AppTheme.textPrimaryDark)
+                    }
+
+                    Button(action: handleCallButton) {
+                        Image(systemName: callState == .connected ? "phone.down.fill" : "phone.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(callState == .incoming ? AppTheme.textMutedDark : AppTheme.textPrimaryDark)
+                            .frame(width: 36, height: 36)
+                            .background(Circle().fill(AppTheme.darkSurfaceAlt))
+                    }
+                    .disabled(callState == .incoming || hasOtherCall)
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -347,44 +367,63 @@ struct DirectChatView: View {
                     .fill(AppTheme.darkBorder)
                     .frame(height: 1)
 
-                ScrollView {
-                    VStack(spacing: 12) {
-                        if isLoading {
-                            Text("메시지 불러오는 중...")
-                                .font(AppFont.body(12))
-                                .foregroundColor(AppTheme.textMutedDark)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        if let errorMessage {
-                            Text(errorMessage)
-                                .font(AppFont.body(12))
-                                .foregroundColor(.red)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        if messages.isEmpty && !isLoading && errorMessage == nil {
-                            Text("아직 메시지가 없어요.")
-                                .font(AppFont.body(12))
-                                .foregroundColor(AppTheme.textSecondaryDark)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        ForEach(messages) { message in
-                            let isSelf = message.senderId == (AppPrefs.getUserId() ?? "")
-                            HStack {
-                                ChatBubble(text: message.content, isSelf: isSelf)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 12) {
+                            if isLoading {
+                                Text("메시지 불러오는 중...")
+                                    .font(AppFont.body(12))
+                                    .foregroundColor(AppTheme.textMutedDark)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(
-                                maxWidth: .infinity,
-                                alignment: isSelf ? .trailing : .leading
-                            )
+
+                            if let errorMessage {
+                                Text(errorMessage)
+                                    .font(AppFont.body(12))
+                                    .foregroundColor(.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+
+                            if messages.isEmpty && !isLoading && errorMessage == nil {
+                                Text("아직 메시지가 없어요.")
+                                    .font(AppFont.body(12))
+                                    .foregroundColor(AppTheme.textSecondaryDark)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+
+                            ForEach(messages) { message in
+                                let isSelf = currentUserId.isEmpty
+                                    ? message.senderId != thread.friendId
+                                    : message.senderId == currentUserId
+                                HStack {
+                                    if isSelf {
+                                        Spacer(minLength: 0)
+                                    }
+                                    ChatBubble(text: message.content, isSelf: isSelf)
+                                    if !isSelf {
+                                        Spacer(minLength: 0)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+
+                            Color.clear
+                                .frame(height: 1)
+                                .id("bottom")
+                        }
+                        .padding(16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .onChange(of: messages.count) { _ in
+                        scrollToBottom(scrollProxy)
+                    }
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            scrollToBottom(scrollProxy)
                         }
                     }
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(width: proxy.size.width)
 
                 HStack(spacing: 10) {
                     TextField("메시지를 입력하세요", text: $input)
@@ -413,9 +452,10 @@ struct DirectChatView: View {
                 .frame(maxWidth: .infinity)
             }
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
-            .background(AppTheme.darkBackground.ignoresSafeArea())
+                .background(AppTheme.darkBackground.ignoresSafeArea())
         }
         .onAppear {
+            MessageNotifications.requestAuthorizationIfNeeded()
             Task { await loadMessages(showLoading: true) }
             connectWebSocket()
         }
@@ -459,6 +499,10 @@ struct DirectChatView: View {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             errorMessage = "메시지를 입력하세요."
+            return
+        }
+        if trimmed.lengthOfBytes(using: .utf8) > maxMessageBytes {
+            errorMessage = "메시지가 너무 깁니다. (최대 \(maxMessageBytes)바이트)"
             return
         }
 
@@ -592,6 +636,31 @@ struct DirectChatView: View {
             throw FriendServiceError.invalidResponse
         }
         try await socketTask.send(.string(text))
+    }
+
+    private func scrollToBottom(_ proxy: ScrollViewProxy) {
+        DispatchQueue.main.async {
+            withAnimation(.easeOut(duration: 0.2)) {
+                proxy.scrollTo("bottom", anchor: .bottom)
+            }
+        }
+    }
+
+    private func handleCallButton() {
+        let isActiveCall = callManager.activeCall?.channelId == thread.id
+        if callManager.state != .idle && !isActiveCall {
+            errorMessage = "이미 통화 중입니다."
+            return
+        }
+        let state = isActiveCall ? callManager.state : .idle
+        switch state {
+        case .idle:
+            callManager.startOutgoingCall(thread: thread)
+        case .outgoing, .connecting, .connected:
+            callManager.endCall()
+        case .incoming:
+            break
+        }
     }
 }
 
@@ -844,6 +913,7 @@ struct ComposeMessageSheetView: View {
     @Environment(\.dismiss) private var dismiss
     let onSent: () -> Void
 
+    private let maxMessageBytes = 4000
     @State private var friends: [FriendSummary] = []
     @State private var isLoading = false
     @State private var isSending = false
@@ -961,6 +1031,10 @@ struct ComposeMessageSheetView: View {
         let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             errorMessage = "메시지를 입력하세요."
+            return
+        }
+        if trimmed.lengthOfBytes(using: .utf8) > maxMessageBytes {
+            errorMessage = "메시지가 너무 깁니다. (최대 \(maxMessageBytes)바이트)"
             return
         }
         guard let token = AppPrefs.getToken(), !token.isEmpty else {

@@ -27,6 +27,7 @@ class FriendActivity : ComponentActivity() {
         requestNotificationPermissionIfNeeded()
         FriendNotifications.ensureChannel(this)
         MessageNotifications.ensureChannel(this)
+        PushTokenManager.refreshToken(this)
 
         setContent {
             DiscordTheme(darkTheme = true) {

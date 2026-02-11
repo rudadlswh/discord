@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		02C4A888623628998180EB1F /* HomeTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD4B94960C6231147E87E35 /* HomeTabsView.swift */; };
 		23ED0FCC892402B81DEA0007 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF1902174BA23A07AEF1673 /* ProfileView.swift */; };
+		2CD26B7D9BF7574E226A35A1 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 4D553B7F737D181B70EC442E /* WebRTC */; };
 		3112B26D27925BF034C757AF /* AuthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C4DC11C2CFDCBB4B7EB2C0 /* AuthViews.swift */; };
 		62CA1016F92A8E0DC5351260 /* AppPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1020724CAF89AC4FCC400751 /* AppPrefs.swift */; };
 		66B65EF41BE3765A83DAF387 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0995B39962A31FA3CB7A84C6 /* LaunchScreen.storyboard */; };
+		6EE3599225EF5E5EDE75CC11 /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C213449A574AAF793C0955 /* CallManager.swift */; };
 		80D801AED0FF7EAC7809BA97 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F64F5C1DBAAC5C614E39941 /* NotificationsView.swift */; };
 		8868594E34F87ECC3B8AACB4 /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0228FC37505154D819B40979 /* ApiClient.swift */; };
 		8CA2F69B12FE6512BE31E1C2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63565DC45A941AFCB1B86EC3 /* AuthService.swift */; };
@@ -33,13 +35,26 @@
 		63565DC45A941AFCB1B86EC3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		6CD4B94960C6231147E87E35 /* HomeTabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabsView.swift; sourceTree = "<group>"; };
 		6F64F5C1DBAAC5C614E39941 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		84C213449A574AAF793C0955 /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		902D2507507FCF92FA339FCE /* DiscordLiteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscordLiteApp.swift; sourceTree = "<group>"; };
 		9426AEF79C62A4B9CAFB8A4A /* FriendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendService.swift; sourceTree = "<group>"; };
 		AE75747E796DB5577B3B0F88 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		CCDAEC80879A69EF4DA9A7FC /* DiscordLite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiscordLite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD87FD0B42530E2A6B5FE277 /* DiscordLite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DiscordLite.entitlements; sourceTree = "<group>"; };
 		DB8ACEC7014F69F152E600C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FEF1902174BA23A07AEF1673 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		74A9B44493B834CC0B83CDFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CD26B7D9BF7574E226A35A1 /* WebRTC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		28ABDDBA422D36D1216B08A7 /* ios */ = {
@@ -50,7 +65,9 @@
 				DB8ACEC7014F69F152E600C7 /* Assets.xcassets */,
 				63565DC45A941AFCB1B86EC3 /* AuthService.swift */,
 				36C4DC11C2CFDCBB4B7EB2C0 /* AuthViews.swift */,
+				84C213449A574AAF793C0955 /* CallManager.swift */,
 				01A91DF68D614C2AF9791126 /* Components.swift */,
+				CD87FD0B42530E2A6B5FE277 /* DiscordLite.entitlements */,
 				902D2507507FCF92FA339FCE /* DiscordLiteApp.swift */,
 				9426AEF79C62A4B9CAFB8A4A /* FriendService.swift */,
 				6CD4B94960C6231147E87E35 /* HomeTabsView.swift */,
@@ -89,6 +106,7 @@
 			buildPhases = (
 				71A98915224191859F7C5EEB /* Sources */,
 				88C45A03EDAAF72A5246A5A6 /* Resources */,
+				74A9B44493B834CC0B83CDFC /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -96,6 +114,7 @@
 			);
 			name = DiscordLite;
 			packageProductDependencies = (
+				4D553B7F737D181B70EC442E /* WebRTC */,
 			);
 			productName = DiscordLite;
 			productReference = CCDAEC80879A69EF4DA9A7FC /* DiscordLite.app */;
@@ -120,6 +139,9 @@
 			);
 			mainGroup = 7FDEE6F06688460BB89B2AE0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -149,6 +171,7 @@
 				62CA1016F92A8E0DC5351260 /* AppPrefs.swift in Sources */,
 				8CA2F69B12FE6512BE31E1C2 /* AuthService.swift in Sources */,
 				3112B26D27925BF034C757AF /* AuthViews.swift in Sources */,
+				6EE3599225EF5E5EDE75CC11 /* CallManager.swift in Sources */,
 				CE8CE8B6A9753CCB697CA5AE /* Components.swift in Sources */,
 				FC1495BD98D42A61367F47CC /* DiscordLiteApp.swift in Sources */,
 				9607A7B7467CA6DE075DA163 /* FriendService.swift in Sources */,
@@ -290,6 +313,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DiscordLite.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = M6L5TLN44L;
 				INFOPLIST_FILE = Info.plist;
@@ -308,6 +332,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DiscordLite.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = M6L5TLN44L;
 				INFOPLIST_FILE = Info.plist;
@@ -344,6 +369,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 114.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4D553B7F737D181B70EC442E /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 88EE171BB46BE153B0B5C5AE /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3B3FA574B6001B84350307A9 /* Project object */;
 }

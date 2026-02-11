@@ -11,6 +11,8 @@ object AppPrefs {
     private const val KEY_BASE_URL = "base_url"
     private const val KEY_SEEN_FRIEND_REQUESTS = "seen_friend_requests"
     private const val KEY_SEEN_MESSAGE_IDS = "seen_message_ids"
+    private const val KEY_ACTIVE_CHANNEL_ID = "active_channel_id"
+    private const val KEY_FCM_TOKEN = "fcm_token"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -48,6 +50,34 @@ object AppPrefs {
 
     fun setBaseUrl(context: Context, value: String) {
         prefs(context).edit().putString(KEY_BASE_URL, value).apply()
+    }
+
+    fun getActiveChannelId(context: Context): String? =
+        prefs(context).getString(KEY_ACTIVE_CHANNEL_ID, null)
+
+    fun setActiveChannelId(context: Context, value: String?) {
+        val trimmed = value?.trim().orEmpty()
+        val editor = prefs(context).edit()
+        if (trimmed.isBlank()) {
+            editor.remove(KEY_ACTIVE_CHANNEL_ID)
+        } else {
+            editor.putString(KEY_ACTIVE_CHANNEL_ID, trimmed)
+        }
+        editor.apply()
+    }
+
+    fun getFcmToken(context: Context): String? =
+        prefs(context).getString(KEY_FCM_TOKEN, null)
+
+    fun setFcmToken(context: Context, value: String?) {
+        val trimmed = value?.trim().orEmpty()
+        val editor = prefs(context).edit()
+        if (trimmed.isBlank()) {
+            editor.remove(KEY_FCM_TOKEN)
+        } else {
+            editor.putString(KEY_FCM_TOKEN, trimmed)
+        }
+        editor.apply()
     }
 
     private fun seenFriendRequestsKey(userId: String?): String {

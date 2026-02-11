@@ -3,15 +3,20 @@ package com.chogm.discord
 import com.chogm.discord.auth.AuthService
 import com.chogm.discord.auth.JwtConfig
 import com.chogm.discord.auth.authRoutes
+import com.chogm.discord.calls.CallConfigService
+import com.chogm.discord.calls.callRoutes
 import com.chogm.discord.channels.ChannelService
 import com.chogm.discord.channels.channelRoutes
 import com.chogm.discord.db.DatabaseFactory
 import com.chogm.discord.db.DbConfig
+import com.chogm.discord.devices.DeviceService
+import com.chogm.discord.devices.deviceRoutes
 import com.chogm.discord.dm.DirectMessageService
 import com.chogm.discord.dm.directMessageRoutes
 import com.chogm.discord.friend.FriendService
 import com.chogm.discord.friend.friendRoutes
 import com.chogm.discord.models.ErrorResponse
+import com.chogm.discord.push.PushService
 import com.chogm.discord.realtime.ChatHub
 import com.chogm.discord.realtime.SignalHub
 import com.chogm.discord.realtime.webSocketRoutes
@@ -92,8 +97,11 @@ fun Application.module() {
     val channelService = ChannelService()
     val directMessageService = DirectMessageService(channelService)
     val userService = UserService()
+    val deviceService = DeviceService()
+    val callConfigService = CallConfigService()
     val chatHub = ChatHub()
     val signalHub = SignalHub()
+    val pushService = PushService(deviceService)
 
     routing {
         get("/ping") {
@@ -105,10 +113,12 @@ fun Application.module() {
         authenticate("auth-jwt") {
             userRoutes(userService)
             friendRoutes(friendService)
+            deviceRoutes(deviceService)
+            callRoutes(callConfigService)
             channelRoutes(channelService)
             directMessageRoutes(directMessageService)
         }
 
-        webSocketRoutes(chatHub, signalHub, channelService)
+        webSocketRoutes(chatHub, signalHub, channelService, pushService, userService)
     }
 }

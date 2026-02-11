@@ -101,11 +101,16 @@
     <string name="messages_time_days">%d일</string>
     <string name="messages_no_threads">아직 대화가 없어요.</string>
     <string name="message_notification_title">%s님의 새 메시지</string>
+    <string name="call_notification_title">음성 통화 요청</string>
+    <string name="call_notification_body">%s님이 통화를 요청했어요.</string>
+    <string name="call_notification_accept">수락</string>
+    <string name="call_notification_decline">거절</string>
     <string name="chat_loading">메시지 불러오는 중...</string>
     <string name="chat_empty">아직 메시지가 없어요.</string>
     <string name="chat_input_hint">메시지를 입력하세요</string>
     <string name="chat_send">보내기</string>
     <string name="chat_send_in_progress">보내는 중...</string>
+    <string name="chat_message_too_long">메시지가 너무 깁니다. (최대 4000바이트)</string>
     <string name="server_add">서버 추가</string>
     <string name="notifications_title">알림</string>
     <string name="notifications_menu">알림 옵션</string>

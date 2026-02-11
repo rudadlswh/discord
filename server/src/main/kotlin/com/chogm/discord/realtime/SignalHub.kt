@@ -18,19 +18,27 @@ class SignalHub {
         rooms[channelId]?.remove(userId)
     }
 
-    suspend fun forward(channelId: String, fromUserId: String, envelope: SignalEnvelope) {
-        val room = rooms[channelId] ?: return
+    suspend fun forward(channelId: String, fromUserId: String, envelope: SignalEnvelope): Boolean {
+        val room = rooms[channelId] ?: return false
         val outbound = envelope.copy(fromUserId = fromUserId)
         val payload = JsonSupport.json.encodeToString(SignalEnvelope.serializer(), outbound)
 
         if (envelope.targetUserId != null) {
-            room[envelope.targetUserId]?.send(payload)
+            val session = room[envelope.targetUserId]
+            if (session != null) {
+                session.send(payload)
+                return true
+            }
+            return false
         } else {
+            var delivered = false
             room.forEach { (userId, session) ->
                 if (userId != fromUserId) {
                     session.send(payload)
+                    delivered = true
                 }
             }
+            return delivered
         }
     }
 }

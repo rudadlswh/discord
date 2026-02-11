@@ -14,6 +14,7 @@ import com.chogm.discord.models.DirectMessageSendRequest
 import com.chogm.discord.models.DirectThreadResponse
 import io.ktor.http.HttpStatusCode
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.UUID

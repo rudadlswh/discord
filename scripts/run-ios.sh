@@ -29,12 +29,11 @@ xcodebuild \
   -derivedDataPath "$DERIVED_DATA" \
   build
 
-DEVICE_ID=$(xcrun simctl list devices available | awk -v name="$SIMULATOR_NAME" '
-  $0 ~ name && $0 ~ /\([0-9A-F-]+\)/ {
-    match($0, /\(([0-9A-F-]+)\)/, m)
-    print m[1]
-    exit
-  }')
+DEVICE_ID=""
+DEVICE_LINE=$(xcrun simctl list devices available | grep -F -m1 "$SIMULATOR_NAME" || true)
+if [ -n "$DEVICE_LINE" ]; then
+  DEVICE_ID=$(echo "$DEVICE_LINE" | sed -E 's/.*\(([0-9A-F-]+)\).*/\1/')
+fi
 
 if [ -z "$DEVICE_ID" ]; then
   echo "Simulator not found: $SIMULATOR_NAME"

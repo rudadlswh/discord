@@ -29,4 +29,12 @@ class UserService {
             displayName = row[Users.displayName]
         )
     }
+
+    fun getDisplayName(userId: String): String? {
+        return transaction {
+            Users.select { Users.id eq userId }
+                .singleOrNull()
+                ?.get(Users.displayName)
+        }
+    }
 }
