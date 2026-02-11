@@ -19,3 +19,8 @@ kotlin-daemon.*
 
 # Local env
 .env
+
+# Secrets
+android/app/google-services.json
+ios/GoogleService-Info.plist
+keys/
